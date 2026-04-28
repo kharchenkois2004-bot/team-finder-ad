@@ -1,0 +1,10 @@
+Users:
+email: ivan@example.com
+password: ivan_pass
+
+email: maria@example.com
+password: maria_pass
+
+Superuser:
+email: alex@example.com
+password: alex_pass
