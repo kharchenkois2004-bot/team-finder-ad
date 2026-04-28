@@ -17,7 +17,7 @@
         </div>
     </div>
 
-    {% if request.user.is_authenticated %}
+    <!-- {% if request.user.is_authenticated %}
         <div class="participants-filter">
             <span class="filter-label">Фильтры пользователей:</span>
             <div class="filter-chips">
@@ -39,6 +39,23 @@
                 </a>
                 {% if active_filter %}
                 <a href="/users/list" class="filter-reset">Сбросить</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %} -->
+
+    {% if all_skills %}
+        <div class="skills-filter">
+            <span class="filter-label">Фильтр по навыкам:</span>
+            <div class="filter-chips">
+                {% for skill in all_skills %}
+                    <a href="?skill={{ skill.name|urlencode }}" 
+                    class="filter-chip {% if skill.name == active_skill %}active{% endif %}">
+                        {{ skill.name }}
+                    </a>
+                {% endfor %}
+                {% if active_skill %}
+                    <a href="/users/list" class="filter-chip filter-chip-clear">Сбросить</a>
                 {% endif %}
             </div>
         </div>

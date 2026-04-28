@@ -1,0 +1,125 @@
+[
+  {
+    "model": "skills.skill",
+    "pk": 1,
+    "fields": { "name": "Python" }
+  },
+  {
+    "model": "skills.skill",
+    "pk": 2,
+    "fields": { "name": "Django" }
+  },
+  {
+    "model": "skills.skill",
+    "pk": 3,
+    "fields": { "name": "JavaScript" }
+  },
+  {
+    "model": "skills.skill",
+    "pk": 4,
+    "fields": { "name": "PostgreSQL" }
+  },
+  {
+    "model": "skills.skill",
+    "pk": 5,
+    "fields": { "name": "Docker" }
+  },
+  {
+    "model": "skills.skill",
+    "pk": 6,
+    "fields": { "name": "React" }
+  },
+
+  {
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+      "email": "ivan@example.com",
+      "name": "Иван",
+      "surname": "Петров",
+      "phone": "+79161234567",
+      "about": "Люблю Python и OpenSource",
+      "github_url": "",
+      "password": "pbkdf2_sha256$1000000$vV6Wd1eGkyXz7XRabYMwpb$4Czyq4wr6jh6agM6yUopXML5IgVWakYdAuYmoZuD0mQ=",
+      "is_active": true,
+      "is_staff": false,
+      "avatar": "",
+      "skills": [1, 2]
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+      "email": "maria@example.com",
+      "name": "Мария",
+      "surname": "Сидорова",
+      "phone": "+79261234568",
+      "about": "Fullstack-разработчица",
+      "github_url": "",
+      "password": "pbkdf2_sha256$1000000$PgFfkSlj2cGcKm0qvIDY22$adhtoxiMwU/z8JlQfz2+oEA/Hp9RdHcWtk6nCDjVmB0=",
+      "is_active": true,
+      "is_staff": false,
+      "avatar": "",
+      "skills": [3, 4, 5]
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 3,
+    "fields": {
+      "email": "alex@example.com",
+      "name": "Алексей",
+      "surname": "Козлов",
+      "phone": "+79361234569",
+      "about": "DevOps инженер",
+      "github_url": "",
+      "password": "pbkdf2_sha256$1000000$3oZyMSShbhiEBkbeHaXddd$71kPkVnPwM8aAHjiVGgHs48qzD/FSYiBRtfaDowwGyY=",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true,
+      "avatar": "",
+      "skills": [2, 6]
+    }
+  },
+
+  {
+    "model": "projects.project",
+    "pk": 1,
+    "fields": {
+      "name": "Веб-сервис бронирования",
+      "description": "Описание проекта бронирования",
+      "owner": 1,
+      "created_at": "2025-06-01T10:00:00Z",
+      "github_url": "",
+      "status": "open",
+      "participants": [1, 2]
+    }
+  },
+  {
+    "model": "projects.project",
+    "pk": 2,
+    "fields": {
+      "name": "Платформа для онлайн-курсов",
+      "description": "Образовательная платформа",
+      "owner": 2,
+      "created_at": "2025-05-28T14:00:00Z",
+      "github_url": "",
+      "status": "open",
+      "participants": [2, 3]
+    }
+  },
+  {
+    "model": "projects.project",
+    "pk": 3,
+    "fields": {
+      "name": "Система управления складом",
+      "description": "Автоматизация склада",
+      "owner": 3,
+      "created_at": "2025-06-10T08:30:00Z",
+      "github_url": "",
+      "status": "closed",
+      "participants": [1, 3]
+    }
+  }
+]

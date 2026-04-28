@@ -3,14 +3,13 @@ from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# TODO: Создать и заполнить .env, ориентируясь на .env_example
-
 SECRET_KEY = config("DJANGO_SECRET_KEY")
 
 DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'users.User'
 
 # Application definition
 
@@ -21,6 +20,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "users.apps.UsersConfig",
+    "projects.apps.ProjectsConfig",
+    "skills.apps.SkillsConfig",
 ]
 
 MIDDLEWARE = [
@@ -38,7 +40,8 @@ ROOT_URLCONF = "team_finder.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / f"templates_var{config('TASK_VERSION', default='1')}"],
+        "DIRS": [BASE_DIR /
+                 f"templates_var{config('TASK_VERSION', default='1')}"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -76,19 +79,28 @@ if not DEBUG:
     AUTH_PASSWORD_VALIDATORS.extend(
         [
             {
-                "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+                "NAME": "django.contrib.auth.password_validation."
+                "UserAttributeSimilarityValidator",
             },
             {
-                "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+                "NAME": "django.contrib.auth.password_validation."
+                "MinimumLengthValidator",
             },
             {
-                "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+                "NAME": "django.contrib.auth.password_validation."
+                "CommonPasswordValidator",
             },
             {
-                "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+                "NAME": "django.contrib.auth.password_validation."
+                "NumericPasswordValidator",
             },
         ]
     )
+
+LOGIN_URL = '/users/login/'
+
+LOGIN_REDIRECT_URL = '/project/list/'
+LOGOUT_REDIRECT_URL = '/project/list/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -107,6 +119,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Media files
 
 MEDIA_URL = "/media/"

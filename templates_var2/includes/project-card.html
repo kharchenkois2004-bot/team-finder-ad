@@ -14,6 +14,15 @@
                     <small class="project-date">{{ project.created_at|date:"d.m.Y" }}</small>
                 </div>
             </div>
+            {% if request.user.is_authenticated %}
+                <button class="favorite-btn {% if request.user.is_authenticated and project in request.user.favorites.all %}is-favorite{% endif %}"
+                        data-project-id="{{ project.id }}"
+                        title="Добавить в избранное">
+                    <svg class="heart-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                </button>
+            {% endif %}
         </div>
 
         <h3 class="project-card-title"><a href="/projects/{{ project.id }}">{{ project.name }}</a></h3>
@@ -31,6 +40,8 @@
                 {{ project.status }}
             {% endif %}
         </span>
+
+        
         {% with count=project.participants.count %}
         <div class="project-participants">
             {% include 'includes/svg/participants.html' %}

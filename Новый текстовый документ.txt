@@ -1,0 +1,5 @@
+python manage.py shell -c "from django.contrib.auth.hashers import make_password; print(make_password('ivan_pass'))"
+
+python manage.py shell -c "from django.contrib.auth.hashers import make_password; print(make_password('maria_pass'))"
+
+python manage.py shell -c "from django.contrib.auth.hashers import make_password; print(make_password('alex_pass'))"
