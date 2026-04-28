@@ -1,9 +1,11 @@
 from django.db import models
 
+from team_finder.constants import NAME_LENGTH
+
 
 class Skill(models.Model):
     name = models.CharField(
-        max_length=124,
+        max_length=NAME_LENGTH,
         unique=True,
         verbose_name='Название'
     )

@@ -1,7 +1,9 @@
 from django import forms
 from django.contrib.auth import authenticate
-from .models import User
 import re
+
+from team_finder.service import form_clean_github_url
+from users.models import User
 
 
 class RegisterForm(forms.ModelForm):
@@ -73,10 +75,7 @@ class EditProfileForm(forms.ModelForm):
         return phone
 
     def clean_github_url(self):
-        url = self.cleaned_data.get('github_url', '')
-        if url and 'github.com' not in url:
-            raise forms.ValidationError('Ссылка должна вести на GitHub')
-        return url
+        return form_clean_github_url(self)
 
 
 class ChangePasswordForm(forms.Form):

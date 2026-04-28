@@ -1,10 +1,12 @@
 # users/admin.py
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.models import Group
-from django import forms
-from .models import User
+from django.utils.html import format_html
+
+from users.models import User
 
 
 class UserCreationForm(forms.ModelForm):
@@ -58,11 +60,13 @@ class UserChangeForm(forms.ModelForm):
                   'is_superuser', 'groups', 'user_permissions')
 
 
+@admin.register(User)
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
 
     list_display = (
+        'avatar_preview',
         'email',
         'name',
         'surname',
@@ -122,6 +126,16 @@ class UserAdmin(BaseUserAdmin):
         'user_permissions'
         )
 
+    @admin.display(description='Аватар')
+    def avatar_preview(self, obj):
+        if obj.avatar:
+            return format_html(
+                '<img src="{}" width="40"'
+                'height="40"'
+                'style="border-radius: 50%;" />',
+                obj.avatar.url
+                )
+        return "—"
 
-admin.site.register(User, UserAdmin)
+
 admin.site.unregister(Group)

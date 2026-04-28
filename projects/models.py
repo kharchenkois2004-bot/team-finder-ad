@@ -1,5 +1,8 @@
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
+
+from team_finder.constants import PROJECT_NAME_LENGTH
 
 
 class Project(models.Model):
@@ -8,7 +11,7 @@ class Project(models.Model):
         CLOSED = 'closed', 'Closed'
 
     name = models.CharField(
-        max_length=200,
+        max_length=PROJECT_NAME_LENGTH,
         verbose_name='Название'
         )
     description = models.TextField(
@@ -30,7 +33,7 @@ class Project(models.Model):
         verbose_name='Ссылка на GitHub'
         )
     status = models.CharField(
-        max_length=6,
+        max_length=max(len(choice[0]) for choice in Status.choices),
         choices=Status.choices,
         default=Status.OPEN,
         verbose_name='Статус'
@@ -49,3 +52,6 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('project_detail', args=[self.pk])

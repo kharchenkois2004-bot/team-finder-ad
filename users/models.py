@@ -1,27 +1,16 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import PermissionsMixin
-from django.db import models
-from skills.models import Skill
-import os
-from PIL import Image, ImageDraw, ImageFont
-import random
 from django.conf import settings
+from django.core.files.base import ContentFile
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.db import models
+from PIL import Image, ImageDraw, ImageFont
+import io
+import os
+import random
 
-
-class UserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError('Email обязателен')
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        return self.create_user(email, password, **extra_fields)
+from skills.models import Skill
+from team_finder.constants import COLORS, IMG_SIZE, TEXTBBOX_XY, NAME_LENGTH
+from team_finder.constants import USER_ABOUT_LENGTH, USER_PHONE_LENGTH
+from users.managers import UserManager
 
 
 def user_avatar_path(instance, filename):
@@ -34,11 +23,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name='Email'
         )
     name = models.CharField(
-        max_length=124,
+        max_length=NAME_LENGTH,
         verbose_name='Имя'
         )
     surname = models.CharField(
-        max_length=124,
+        max_length=NAME_LENGTH,
         verbose_name='Фамилия'
         )
     avatar = models.ImageField(
@@ -46,7 +35,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name='Аватар'
         )
     phone = models.CharField(
-        max_length=12,
+        max_length=USER_PHONE_LENGTH,
         verbose_name='Телефон'
         )
     github_url = models.URLField(
@@ -54,7 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name='Ссылка на GitHub'
         )
     about = models.TextField(
-        max_length=256,
+        max_length=USER_ABOUT_LENGTH,
         blank=True,
         verbose_name='О себе'
         )
@@ -93,19 +82,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def generate_default_avatar(self):
         first_letter = self.name[0].upper() if self.name else '?'
-        colors = [
-            (52, 152, 219),
-            (46, 204, 113),
-            (155, 89, 182),
-            (52, 73, 94),
-            (241, 196, 15),
-            (230, 126, 34),
-            (231, 76, 60),
-            (149, 165, 166)
-        ]
-        bg_color = random.choice(colors)
-        img_size = (200, 200)
-        img = Image.new('RGB', img_size, color=bg_color)
+        bg_color = random.choice(COLORS)
+
+        img = Image.new('RGB', IMG_SIZE, color=bg_color)
         draw = ImageDraw.Draw(img)
 
         font = None
@@ -120,17 +99,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         if font is None:
             font = ImageFont.load_default()
 
-        bbox = draw.textbbox((0, 0), first_letter, font=font)
+        bbox = draw.textbbox(TEXTBBOX_XY, first_letter, font=font)
         w, h = bbox[2]-bbox[0], bbox[3]-bbox[1]
         draw.text(
-            ((img_size[0]-w)/2, (img_size[1]-h)/2-10),
+            ((IMG_SIZE[0]-w)/2, (IMG_SIZE[1]-h)/2-10),
             first_letter,
             fill='white',
             font=font
             )
 
-        from django.core.files.base import ContentFile
-        import io
         buffer = io.BytesIO()
         img.save(buffer, format='PNG')
         buffer.seek(0)

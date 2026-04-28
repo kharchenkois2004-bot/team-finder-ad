@@ -1,7 +1,9 @@
 from django.contrib import admin
-from .models import Project
+
+from projects.models import Project
 
 
+@admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     list_display = (
         'name',
@@ -10,6 +12,8 @@ class ProjectAdmin(admin.ModelAdmin):
         'created_at',
         'participants_count'
         )
+    list_display_links = ('name',)
+    list_editable = ('status',)
     list_filter = (
         'status',
         'created_at'
@@ -20,13 +24,9 @@ class ProjectAdmin(admin.ModelAdmin):
         'owner__name',
         'owner__surname'
         )
-    ordering = ('-created_at',)
     filter_horizontal = ('participants',)
     readonly_fields = ('created_at',)
 
+    @admin.display(description='Кол-во участников')
     def participants_count(self, obj):
         return obj.participants.count()
-    participants_count.short_description = 'Кол-во участников'
-
-
-admin.site.register(Project, ProjectAdmin)

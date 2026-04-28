@@ -1,35 +1,35 @@
-from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
 from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
-from .forms import RegisterForm, LoginForm, EditProfileForm, ChangePasswordForm
-from .models import User
 import json
-from skills.models import Skill
+from rest_framework import status
 
-ITEMS_PER_PAGE = 12
+from skills.models import Skill
+from team_finder.constants import SKILL_NUM
+from team_finder.service import paginator_get_page
+from users.forms import RegisterForm, LoginForm
+from users.forms import EditProfileForm, ChangePasswordForm
+from users.models import User
 
 
 def register_view(request):
-    if request.method == 'POST':
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('project_list')
+    form = RegisterForm(request.POST or None)
+    if form.is_valid():
+        user = form.save()
+        login(request, user)
+        return redirect('project_list')
     else:
         form = RegisterForm()
     return render(request, 'users/register.html', {'form': form})
 
 
 def login_view(request):
-    if request.method == 'POST':
-        form = LoginForm(data=request.POST)
-        if form.is_valid():
-            login(request, form.get_user())
-            return redirect('project_list')
+    form = LoginForm(data=request.POST or None)
+    if form.is_valid():
+        login(request, form.get_user())
+        return redirect('project_list')
     else:
         form = LoginForm()
     return render(request, 'users/login.html', {'form': form})
@@ -47,15 +47,14 @@ def user_detail(request, user_id):
 
 @login_required
 def edit_profile(request):
-    if request.method == 'POST':
-        form = EditProfileForm(
-            request.POST,
-            request.FILES,
-            instance=request.user
-            )
-        if form.is_valid():
-            form.save()
-            return redirect('users:user_detail', user_id=request.user.pk)
+    form = EditProfileForm(
+        request.POST or None,
+        request.FILES,
+        instance=request.user
+        )
+    if form.is_valid():
+        form.save()
+        return redirect('users:user_detail', user_id=request.user.pk)
     else:
         form = EditProfileForm(instance=request.user)
     return render(request, 'users/edit_profile.html', {'form': form})
@@ -63,12 +62,13 @@ def edit_profile(request):
 
 @login_required
 def change_password(request):
-    if request.method == 'POST':
-        form = ChangePasswordForm(request.user, data=request.POST)
-        if form.is_valid():
-            form.save()
-            update_session_auth_hash(request, request.user)
-            return redirect('users:user_detail', user_id=request.user.pk)
+    form = ChangePasswordForm(
+        request.user,
+        data=request.POST or None)
+    if form.is_valid():
+        form.save()
+        update_session_auth_hash(request, request.user)
+        return redirect('users:user_detail', user_id=request.user.pk)
     else:
         form = ChangePasswordForm(request.user)
     return render(request, 'users/change_password.html', {'form': form})
@@ -84,8 +84,7 @@ def user_list(request):
         users = users.filter(skills__name=skill_name).distinct()
         active_skill = skill_name
 
-    paginator = Paginator(users, ITEMS_PER_PAGE)
-    page_obj = paginator.get_page(request.GET.get('page'))
+    page_obj = paginator_get_page(objects=users, request=request)
     context = {
         'participants': page_obj,
         'all_skills': all_skills,
@@ -96,19 +95,24 @@ def user_list(request):
 
 @require_GET
 def skills_autocomplete(request):
-    q = request.GET.get('q', '').strip()
-    if not q:
+    query = request.GET.get('q', '').strip()
+    if not query:
         return JsonResponse([], safe=False)
-    skills = Skill.objects.filter(name__istartswith=q).order_by('name')[:10]
-    data = [{'id': s.id, 'name': s.name} for s in skills]
-    return JsonResponse(data, safe=False)
+    skills = Skill.objects.filter(
+        name__istartswith=query
+        ).order_by('name')[:SKILL_NUM]
+    skills_data = [{'id': skill.id, 'name': skill.name} for skill in skills]
+    return JsonResponse(skills_data, safe=False)
 
 
 @require_POST
 @login_required
 def add_skill(request, user_id):
     if request.user.pk != user_id:
-        return JsonResponse({'error': 'Нет прав'}, status=403)
+        return JsonResponse(
+            {'error': 'Нет прав'},
+            status=status.HTTP_403_FORBIDDEN
+            )
 
     data = json.loads(request.body)
     skill_id = data.get('skill_id')
