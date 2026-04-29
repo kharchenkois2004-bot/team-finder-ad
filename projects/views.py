@@ -42,9 +42,7 @@ def project_create(request):
         project.save()
         form.save_m2m()
         project.participants.add(request.user)
-        return redirect('project_detail', project_id=project.pk)
-    else:
-        form = ProjectForm()
+        return redirect('projects:project_detail', project_id=project.pk)
     return render(
         request,
         'projects/create-project.html',
@@ -65,9 +63,7 @@ def project_edit(request, project_id):
         )
     if form.is_valid():
         form.save()
-        return redirect('project_detail', project_id=project.pk)
-    else:
-        form = ProjectForm(instance=project)
+        return redirect('projects:project_detail', project_id=project.pk)
     return render(
         request,
         'projects/create-project.html',

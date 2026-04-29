@@ -10,6 +10,6 @@ def form_clean_github_url(form):
     return url
 
 
-def paginator_get_page(objects, request):
-    paginator = Paginator(objects, ITEMS_PER_PAGE)
+def paginator_get_page(objects, request, items_num=ITEMS_PER_PAGE):
+    paginator = Paginator(objects, items_num)
     return paginator.get_page(request.GET.get('page'))

@@ -1,7 +1,7 @@
 from django import forms
 
-from team_finder.service import form_clean_github_url
 from projects.models import Project
+from team_finder.service import form_clean_github_url
 
 
 class ProjectForm(forms.ModelForm):

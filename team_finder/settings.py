@@ -94,8 +94,8 @@ if not DEBUG:
 
 LOGIN_URL = 'users:login'
 
-LOGIN_REDIRECT_URL = 'project_list'
-LOGOUT_REDIRECT_URL = 'project_list'
+LOGIN_REDIRECT_URL = 'projects:project_list'
+LOGOUT_REDIRECT_URL = 'projects:project_list'
 
 LANGUAGE_CODE = "ru-RU"
 

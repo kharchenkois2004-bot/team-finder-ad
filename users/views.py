@@ -1,9 +1,10 @@
+import json
+
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
-import json
 from rest_framework import status
 
 from skills.models import Skill
@@ -19,9 +20,7 @@ def register_view(request):
     if form.is_valid():
         user = form.save()
         login(request, user)
-        return redirect('project_list')
-    else:
-        form = RegisterForm()
+        return redirect('projects:project_list')
     return render(request, 'users/register.html', {'form': form})
 
 
@@ -29,15 +28,13 @@ def login_view(request):
     form = LoginForm(data=request.POST or None)
     if form.is_valid():
         login(request, form.get_user())
-        return redirect('project_list')
-    else:
-        form = LoginForm()
+        return redirect('projects:project_list')
     return render(request, 'users/login.html', {'form': form})
 
 
 def logout_view(request):
     logout(request)
-    return redirect('project_list')
+    return redirect('projects:project_list')
 
 
 def user_detail(request, user_id):
@@ -55,8 +52,6 @@ def edit_profile(request):
     if form.is_valid():
         form.save()
         return redirect('users:user_detail', user_id=request.user.pk)
-    else:
-        form = EditProfileForm(instance=request.user)
     return render(request, 'users/edit_profile.html', {'form': form})
 
 
@@ -69,8 +64,6 @@ def change_password(request):
         form.save()
         update_session_auth_hash(request, request.user)
         return redirect('users:user_detail', user_id=request.user.pk)
-    else:
-        form = ChangePasswordForm(request.user)
     return render(request, 'users/change_password.html', {'form': form})
 
 
@@ -125,7 +118,7 @@ def add_skill(request, user_id):
     elif name:
         skill, created = Skill.objects.get_or_create(name=name.strip())
     else:
-        return JsonResponse({'error': 'Не переданы параметры'}, status=400)
+        return JsonResponse({'error': 'Не переданы параметры'}, status=status.HTTP_400_BAD_REQUEST)
 
     user = request.user
     if not user.skills.filter(pk=skill.pk).exists():
@@ -144,7 +137,7 @@ def add_skill(request, user_id):
 @login_required
 def remove_skill(request, user_id, skill_id):
     if request.user.pk != user_id:
-        return JsonResponse({'error': 'Нет прав'}, status=403)
+        return JsonResponse({'error': 'Нет прав'}, status=status.HTTP_403_FORBIDDEN)
     user = request.user
     skill = get_object_or_404(Skill, pk=skill_id)
     if user.skills.filter(pk=skill.pk).exists():
