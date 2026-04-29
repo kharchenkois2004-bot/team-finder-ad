@@ -4,9 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
-from team_finder.service import paginator_get_page
+
 from projects.models import Project
 from projects.forms import ProjectForm
+from team_finder.service import paginator_get_page
 
 
 def project_list(request):

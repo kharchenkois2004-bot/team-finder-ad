@@ -1,11 +1,12 @@
+import io
+import os
+import random
+
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from PIL import Image, ImageDraw, ImageFont
-import io
-import os
-import random
 
 from skills.models import Skill
 from team_finder.constants import COLORS, IMG_SIZE, TEXTBBOX_XY, NAME_LENGTH
